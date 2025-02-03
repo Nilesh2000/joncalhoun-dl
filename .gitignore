@@ -1,0 +1,14 @@
+# Python files
+__pycache__/
+
+# Log files
+debug.log
+
+# Virtual environments
+env/
+
+# OS-specific
+.DS_Store
+
+# Video Files
+*.mp4
