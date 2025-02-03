@@ -1,8 +1,8 @@
 import logging
 from typing import Dict, List, Tuple
-
 import requests
 from bs4 import BeautifulSoup
+from config import COURSE_CONFIG
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ def fetch_html(session: requests.Session, url: str) -> BeautifulSoup:
         url: The URL to fetch.
 
     Returns:
-        BeautifulSoup object containing the parsed HTML.
+        Parsed HTML content.
 
     Raises:
         ConnectionError: If the page fails to load.
@@ -32,64 +32,61 @@ def fetch_html(session: requests.Session, url: str) -> BeautifulSoup:
     return BeautifulSoup(response.text, "html.parser")
 
 
-def extract_section_name(tag) -> str:
-    """Extracts and formats a section name from an <h3> tag.
+def extract_section_name(section_div) -> str:
+    """Extracts and formats a section name from an <h3> inside a section <div>.
 
     Args:
-        tag: BeautifulSoup tag containing the section name.
+        section_div: BeautifulSoup tag representing the section.
 
     Returns:
         The formatted section name.
     """
-    return tag.text.strip().replace("/", "_").replace(" ", "_")
+    h3_tag = section_div.find("h3")  # Extract <h3> inside this section div
+    if h3_tag:
+        return h3_tag.text.strip().replace("/", "_").replace(" ", "_")
+    return "Uncategorized"  # Fallback in case no <h3> is found
 
 
-def extract_lesson_details(tag) -> Tuple[str, str]:
-    """Extracts lesson title and URL from an <a> tag.
+def extract_lesson_details(lesson_link) -> Tuple[str, str]:
+    """Extracts lesson title and URL from a lesson link.
 
     Args:
-        tag: BeautifulSoup tag containing the lesson link.
+        lesson_link: BeautifulSoup tag containing the lesson link.
 
     Returns:
         A tuple of (lesson title, lesson URL).
     """
-    lesson_title = tag.text.strip().replace("/", "_").replace(" ", "_")
-    lesson_url = f"{BASE_URL}{tag['href']}"
+    lesson_title = lesson_link.text.strip().replace("/", "_").replace(" ", "_")
+    lesson_url = f"{BASE_URL}{lesson_link['href']}"
     return lesson_title, lesson_url
 
 
-def extract_sections_and_lessons(
-    soup: BeautifulSoup,
-) -> Dict[str, List[Tuple[str, str]]]:
-    """Extracts section names and corresponding lesson links from the HTML, ignoring the first <h3>.
+def extract_sections_and_lessons(soup: BeautifulSoup, course_prefix: str) -> Dict[str, List[Tuple[str, str]]]:
+    """Extracts section names and corresponding lesson links from the HTML using div IDs.
 
     Args:
-        soup (BeautifulSoup): The BeautifulSoup object containing course page HTML.
+        soup: The BeautifulSoup object containing course page HTML.
+        course_prefix: The course-specific section prefix to identify sections.
 
     Returns:
-        Dict[str, List[Tuple[str, str]]]: A dictionary where section names are keys
-        and values are lists of (lesson name, lesson URL) tuples.
+        A dictionary where section names are keys and values are lists
+        of (lesson name, lesson URL) tuples.
 
     Raises:
         ValueError: If no lessons are found.
     """
     sections: Dict[str, List[Tuple[str, str]]] = {}
-    current_section = "Uncategorized"
-    first_h3_skipped = False  # Track if the first <h3> has been skipped
+    section_divs = soup.find_all("div", id=lambda x: x and x.startswith(course_prefix))
 
-    for tag in soup.find_all(["h3", "a"]):
-        if tag.name == "h3":
-            if not first_h3_skipped:
-                first_h3_skipped = True  # Ignore the first <h3> (page heading)
-                continue  # Skip this iteration
+    for section_div in section_divs[1:]:  # Skip the first section div
+        section_name = extract_section_name(section_div)  # Extract the title from <h3>
+        logger.info("[+] Found section: %s", section_name)
 
-            current_section = tag.text.strip().replace("/", "_").replace(" ", "_")
-            logger.info("[+] Found section: %s", current_section)
-            sections[current_section] = []
-
-        elif tag.name == "a" and "/lessons/" in tag["href"]:
-            lesson_title, lesson_url = extract_lesson_details(tag)
-            sections[current_section].append((lesson_title, lesson_url))
+        sections[section_name] = []
+        for lesson_link in section_div.find_all("a", href=True):
+            if "/lessons/" in lesson_link["href"]:
+                lesson_title, lesson_url = extract_lesson_details(lesson_link)
+                sections[section_name].append((lesson_title, lesson_url))
 
     if not sections:
         logger.error("[!] No sections or lessons found.")
@@ -98,21 +95,25 @@ def extract_sections_and_lessons(
     return sections
 
 
-def get_sections_and_lesson_urls(
-    session: requests.Session, course_url: str
-) -> Tuple[Dict[str, List[Tuple[str, str]]], int]:
+def get_sections_and_lesson_urls(session: requests.Session, course_name: str) -> Tuple[Dict[str, List[Tuple[str, str]]], int]:
     """Fetches course page HTML and extracts structured lesson data.
 
     Args:
         session: The session object to maintain authentication.
-        course_url: The course page URL.
+        course_name: The course name to determine the correct section prefix.
 
     Returns:
-        A dictionary with section names as keys and a list of (lesson name, URL) tuples as values.
-        The total number of videos found.
+        A dictionary with section names as keys and a list of (lesson name, URL) tuples as values,
+        and the total number of videos found.
     """
-    soup = fetch_html(session, course_url)
-    sections = extract_sections_and_lessons(soup)
+    course_info = COURSE_CONFIG.get(course_name)
+    if not course_info:
+        logger.error("[!] Invalid course name: %s", course_name)
+        raise ValueError(f"Course '{course_name}' not found in configuration.")
+
+    soup = fetch_html(session, course_info["url"])
+    sections = extract_sections_and_lessons(soup, course_info["div_prefix"])
+
     total_lessons = sum(len(v) for v in sections.values())
 
     logger.info("[*] Extracted Sections: %d, Lessons: %d", len(sections), total_lessons)

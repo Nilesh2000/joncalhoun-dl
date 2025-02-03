@@ -5,17 +5,17 @@ A Python-based CLI tool to **download course videos** from [Jon Calhoun's course
 ---
 
 ## **📌 Features**
-- **Supports [Test With Go](https://testwithgo.com/) and [Web Development with Go](https://www.usegolang.com/)**
-- **Names videos using lesson titles**
-- **Organizes videos into section-based folders**
+- Supports [Test With Go](https://testwithgo.com/) and [Web Development with Go](https://www.usegolang.com/)
+- Names videos using lesson titles
+- Organizes videos into section-based folders
 
 ---
 
 ## **🛠️ Installation**
 ### **1️⃣ Clone the Repository**
 ```sh
-git clone https://github.com/Nilesh2000/calhoun-dl.git
-cd calhoun-dl
+git clone https://github.com/Nilesh2000/joncalhoun-dl.git
+cd joncalhoun-dl
 ```
 
 ### **2️⃣ Set Up a Virtual Environment (Optional but Recommended)**
@@ -61,7 +61,7 @@ calhoun-dl/
 │── scraper.py             # Scrapes lessons & extracts MP4 URLs
 │── downloader.py          # Downloads videos from MP4 links
 │── utils.py               # Utility functions (argument parsing)
-│── constants.py           # Stores global constants (like COURSES)
+│── config.py              # Stores configuration data (like COURSES)
 │── requirements.txt       # Dependencies
 │── .gitignore             # Ignore unnecessary files
 │── LICENSE                # License file
@@ -77,4 +77,4 @@ calhoun-dl/
 
 ## **📜 License**
 
-This project is licensed under the MIT License. See LICENSE for details.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

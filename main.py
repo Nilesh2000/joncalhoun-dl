@@ -3,7 +3,7 @@ import logging
 import requests
 
 from auth import login
-from constants import COURSES
+from config import COURSE_CONFIG
 from downloader import download_videos
 from scraper import get_sections_and_lesson_urls
 from utils import parse_arguments
@@ -29,12 +29,11 @@ def main() -> None:
         destination: str = args.dest
 
         # Fetch course metadata
-        course_info = COURSES.get(course_name)
+        course_info = COURSE_CONFIG.get(course_name)
         if not course_info:
             logger.error("[!] Invalid course selected: %s", course_name)
             return
 
-        course_url = course_info["url"]
         course_prefix = course_info["prefix"]
 
         session: requests.Session = requests.Session()
@@ -43,7 +42,7 @@ def main() -> None:
         login(session, email, password)
 
         # Fetch sections and videos
-        sections, total_lessons = get_sections_and_lesson_urls(session, course_url)
+        sections, total_lessons = get_sections_and_lesson_urls(session, course_name)
 
         # Download Videos
         download_videos(session, sections, destination, course_prefix)

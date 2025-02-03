@@ -1,6 +1,6 @@
 import argparse
 
-from constants import COURSES
+from config import COURSE_CONFIG
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -18,7 +18,7 @@ def get_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--course",
         required=True,
-        choices=COURSES.keys(),
+        choices=COURSE_CONFIG.keys(),
         help="The course to download.",
     )
     parser.add_argument(
@@ -41,6 +41,6 @@ def parse_arguments() -> argparse.Namespace:
 
     # Set default destination folder if not provided
     if not args.dest:
-        args.dest = COURSES[args.course]["default_folder"]
+        args.dest = COURSE_CONFIG[args.course]["default_folder"]
 
     return args

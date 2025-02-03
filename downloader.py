@@ -144,11 +144,12 @@ def download_videos(
 
     for section, videos in sections.items():
         section_path = get_section_path(destination, section_counter, section)
-        section_counter += 1  # Increment section counter
+        section_counter += 1
 
         logger.info("=== Processing Section: %s (%d videos) ===", section, len(videos))
 
         for lesson_title, lesson_url in videos:
             mp4_url = get_mp4_url(session, lesson_url, course_prefix)
             download_video(session, mp4_url, section_path, lesson_counter, lesson_title)
-            lesson_counter += 1  # Increment lesson counter across sections
+            if section_counter != 0:
+                lesson_counter += 1  # Increment lesson counter across sections
