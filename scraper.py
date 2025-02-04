@@ -1,7 +1,9 @@
 import logging
 from typing import Dict, List, Tuple
+
 import requests
 from bs4 import BeautifulSoup
+
 from config import COURSE_CONFIG
 
 logger = logging.getLogger(__name__)
@@ -61,7 +63,9 @@ def extract_lesson_details(lesson_link) -> Tuple[str, str]:
     return lesson_title, lesson_url
 
 
-def extract_sections_and_lessons(soup: BeautifulSoup, course_prefix: str) -> Dict[str, List[Tuple[str, str]]]:
+def extract_sections_and_lessons(
+    soup: BeautifulSoup, course_prefix: str
+) -> Dict[str, List[Tuple[str, str]]]:
     """Extracts section names and corresponding lesson links from the HTML using div IDs.
 
     Args:
@@ -95,7 +99,9 @@ def extract_sections_and_lessons(soup: BeautifulSoup, course_prefix: str) -> Dic
     return sections
 
 
-def get_sections_and_lesson_urls(session: requests.Session, course_name: str) -> Tuple[Dict[str, List[Tuple[str, str]]], int]:
+def get_sections_and_lesson_urls(
+    session: requests.Session, course_name: str
+) -> Tuple[Dict[str, List[Tuple[str, str]]], int]:
     """Fetches course page HTML and extracts structured lesson data.
 
     Args:
