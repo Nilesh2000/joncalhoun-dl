@@ -2,16 +2,15 @@
 
 A Python-based CLI tool to **download course videos** from [Jon Calhoun's courses](https://courses.calhoun.io). It logs in, scrapes lessons, and downloads `.mp4` videos directly from the site.
 > Before you proceed, note that you must be a paid user to download the content
+
 You can create an account [here](https://courses.calhoun.io/signup?).
 
----
 
 ## **📌 Features**
 - Supports [Test With Go](https://testwithgo.com/) and [Web Development with Go](https://www.usegolang.com/)
 - Names videos using lesson titles
 - Organizes videos into numbered section-based folders
 
----
 
 ## **🛠️ Installation**
 ### **1️⃣ Clone the Repository**
@@ -32,7 +31,6 @@ venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 ```
 
----
 
 ## **🚀 Usage**
 ### **1️⃣ Run the Script**
@@ -53,7 +51,6 @@ python main.py --email="your_email@example.com" --password="your_password" --cou
 python main.py --email="your_email@example.com" --password="your_password" --course="webdevwithgo" --dest="/path/to/save"
 ```
 
----
 
 ## **📂 Project Structure**
 ```sh
@@ -70,12 +67,10 @@ calhoun-dl/
 │── README.md              # Documentation
 ```
 
----
 
 ## **👥 Contributors**
 - [Nilesh D](https://github.com/Nilesh2000/)
 
----
 
 ## **📜 License**
 
