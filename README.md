@@ -1,13 +1,15 @@
-# **Calhoun Course Downloader**
+# **Jon Calhoun Course Downloader**
 
 A Python-based CLI tool to **download course videos** from [Jon Calhoun's courses](https://courses.calhoun.io). It logs in, scrapes lessons, and downloads `.mp4` videos directly from the site.
+> Before you proceed, note that you must be a paid user to download the content
+You can create an account [here](https://courses.calhoun.io/signup?).
 
 ---
 
 ## **📌 Features**
 - Supports [Test With Go](https://testwithgo.com/) and [Web Development with Go](https://www.usegolang.com/)
 - Names videos using lesson titles
-- Organizes videos into section-based folders
+- Organizes videos into numbered section-based folders
 
 ---
 
@@ -61,7 +63,7 @@ calhoun-dl/
 │── scraper.py             # Scrapes lessons & extracts MP4 URLs
 │── downloader.py          # Downloads videos from MP4 links
 │── utils.py               # Utility functions (argument parsing)
-│── config.py              # Stores configuration data (like COURSES)
+│── config.py              # Stores configuration data (like COURSE_CONFIG)
 │── requirements.txt       # Dependencies
 │── .gitignore             # Ignore unnecessary files
 │── LICENSE                # License file
